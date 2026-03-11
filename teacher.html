@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Учитель - Щелочные металлы</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    
+    <style>
+        :root {
+            --metal-silver: #C0C0C0;
+            --flame-lithium: #FF69B4;
+            --flame-sodium: #FFD700;
+            --flame-potassium: #9370DB;
+            --metal-dark: #2F4F4F;
+            --text-light: #F0F0F0;
+            --bg-gradient-start: #2F4F4F;
+            --bg-gradient-end: #696969;
+            --glass-bg: rgba(192, 192, 192, 0.15);
+            --glass-bg-dark: rgba(47, 79, 79, 0.4);
+            --glass-border: rgba(255, 215, 0, 0.5);
+            --glass-blur: 12px;
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, 
+                var(--bg-gradient-start), 
+                var(--bg-gradient-end));
+        }
+        
+        #mainInterface {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        .teacher-header {
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            border-bottom: 2px solid var(--flame-sodium);
+        }
+        
+        .header-left h1 {
+            font-size: 1.8rem;
+            color: var(--flame-sodium);
+            text-shadow: 0 0 15px rgba(255,215,0,0.5);
+        }
+        
+        .game-code-box {
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+            border-radius: 15px;
+        }
+        
+        .code-display {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--flame-sodium);
+            letter-spacing: 3px;
+            min-width: 180px;
+            text-align: center;
+        }
+        
+        .glass-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--text-light);
+            transition: all 0.3s;
+            border: 2px solid var(--flame-sodium);
+        }
+        
+        .glass-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 105, 180, 0.3);
+            border-color: var(--flame-lithium);
+            box-shadow: 0 0 30px var(--flame-lithium);
+        }
+        
+        .glass-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        .left-column {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        .right-column {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        .glass-panel {
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            border: 2px solid var(--flame-sodium);
+            box-shadow: var(--glass-shadow);
+        }
+        
+        .glass-panel h2 {
+            color: var(--flame-sodium);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--flame-sodium);
+            padding-bottom: 10px;
+            flex-shrink: 0;
+        }
+        
+        .control-panel {
+            flex-shrink: 0;
+        }
+        
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .full-width {
+            grid-column: span 2;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        
+        .stat-card {
+            padding: 15px;
+            text-align: center;
+            border-radius: 12px;
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+            color: var(--text-light);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--flame-sodium);
+        }
+        
+        .info-block {
+            padding: 15px;
+            border-radius: 12px;
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        .info-value {
+            color: var(--flame-sodium);
+            font-weight: 700;
+        }
+        
+        /* ============== СПИСОК УЧЕНИКОВ ============== */
+        .players-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
+            padding-right: 5px;
+        }
+        
+        .players-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding-bottom: 10px;
+        }
+        
+        .player-card {
+            padding: 15px 10px;
+            text-align: center;
+            border-radius: 12px;
+            transition: 0.3s;
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+            color: var(--text-light);
+        }
+        
+        .player-card.answered {
+            border-color: var(--flame-lithium);
+            background: rgba(255, 105, 180, 0.2);
+            box-shadow: 0 0 20px var(--flame-lithium);
+        }
+        
+        .player-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 215, 0, 0.3);
+            color: var(--flame-sodium);
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 900;
+            border: 2px solid var(--flame-sodium);
+        }
+        
+        .player-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+        
+        .player-score {
+            font-size: 1.2rem;
+            color: var(--flame-sodium);
+        }
+        
+        /* ============== ВОПРОСЫ ============== */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
+            padding-right: 5px;
+        }
+        
+        .questions-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+            padding-bottom: 10px;
+        }
+        
+        .question-item {
+            padding: 12px 8px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+            color: var(--text-light);
+        }
+        
+        .question-item:hover {
+            transform: scale(1.05);
+            border-color: var(--flame-lithium);
+            box-shadow: 0 0 20px var(--flame-lithium);
+        }
+        
+        .question-item.active {
+            border-color: var(--flame-lithium);
+            background: rgba(255, 105, 180, 0.2);
+        }
+        
+        .question-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .question-points {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .easy { color: #98FB98; }
+        .medium { color: var(--flame-sodium); }
+        .hard { color: var(--flame-lithium); }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-light);
+        }
+        
+        .hidden { display: none; }
+        
+        /* ============== ПРЕЗЕНТАЦИЯ ============== */
+        #presentationMode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            background: linear-gradient(135deg, 
+                var(--bg-gradient-start), 
+                var(--bg-gradient-end));
+        }
+        
+        #presentationMode.active {
+            display: flex;
+        }
+        
+        .presentation-header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            background: var(--glass-bg-dark);
+            border-bottom: 2px solid var(--flame-sodium);
+            color: var(--flame-sodium);
+        }
+        
+        .presentation-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            min-height: 0;
+        }
+        
+        .presentation-question {
+            max-width: 1000px;
+            width: 100%;
+            padding: 60px;
+            text-align: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            border: 2px solid var(--flame-sodium);
+            border-radius: 20px;
+        }
+        
+        .presentation-question h2 {
+            font-size: 3rem;
+            line-height: 1.4;
+            margin-bottom: 40px;
+            color: var(--text-light);
+            text-shadow: 0 0 15px var(--flame-sodium);
+            word-break: break-word;
+        }
+        
+        .presentation-answer {
+            font-size: 2.5rem;
+            color: var(--text-light);
+            background: var(--glass-bg-dark);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border: 2px solid var(--flame-lithium);
+            display: none;
+            word-break: break-word;
+        }
+        
+        .presentation-answer.show {
+            display: block;
+            animation: popIn 0.5s;
+        }
+        
+        .presentation-controls {
+            padding: 30px;
+            text-align: center;
+            border-top: 2px solid var(--flame-sodium);
+            background: var(--glass-bg);
+            flex-shrink: 0;
+        }
+        
+        .presentation-controls .glass-btn {
+            display: inline-block;
+            margin: 0 15px;
+            padding: 18px 40px;
+            font-size: 1.3rem;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="mainInterface">
+        <header class="teacher-header">
+            <div class="header-left">
+                <h1>🧪 ЩЕЛОЧНЫЕ МЕТАЛЛЫ • 30 вопросов</h1>
+            </div>
+            <div class="game-code-box">
+                <span>🧪 КОД:</span>
+                <div id="gameCode" class="code-display">--------</div>
+                <a href="index.html" class="glass-btn">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Левая колонка -->
+            <div class="left-column">
+                <!-- Панель управления -->
+                <div class="glass-panel control-panel">
+                    <h2><i class="fas fa-flask"></i> УПРАВЛЕНИЕ</h2>
+                    
+                    <div id="startSection">
+                        <button onclick="createGame()" class="glass-btn full-width">
+                            <i class="fas fa-plus-circle"></i> 🧪 СОЗДАТЬ ИГРУ
+                        </button>
+                    </div>
+
+                    <div id="gameControls" class="hidden">
+                        <!-- Кнопки управления -->
+                        <div id="controlPanel">
+                            <div class="control-buttons">
+                                <button onclick="showQuestionOnBoard(currentQuestionIndex)" id="showCurrentBtn" class="glass-btn full-width">
+                                    <i class="fas fa-play"></i> ПОКАЗАТЬ ВОПРОС
+                                </button>
+                                <button onclick="showAnswerOnBoard()" id="showAnswerBtn" class="glass-btn" disabled>
+                                    <i class="fas fa-check-circle"></i> ОТВЕТ
+                                </button>
+                                <button onclick="nextQuestion()" id="nextBtn" class="glass-btn" disabled>
+                                    <i class="fas fa-forward"></i> ДАЛЕЕ
+                                </button>
+                                <button onclick="finishGame()" class="glass-btn full-width">
+                                    <i class="fas fa-flag-checkered"></i> ЗАВЕРШИТЬ
+                                </button>
+                                <button onclick="resetGame()" class="glass-btn full-width">
+                                    <i class="fas fa-redo"></i> СБРОС
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Статистика -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalPlayers">0</div>
+                                <div>🧪 Учеников</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="answeredCount">0</div>
+                                <div>✅ Ответили</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="correctCount">0</div>
+                                <div>⭐ Верно</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="wrongCount">0</div>
+                                <div>❌ Неверно</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Информация -->
+                        <div class="info-block">
+                            <div class="info-row">
+                                <span>🧪 Текущий вопрос:</span>
+                                <span class="info-value" id="currentQ">0/30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- СПИСОК УЧЕНИКОВ -->
+                <div class="glass-panel" style="flex: 1; min-height: 0;">
+                    <h2><i class="fas fa-users"></i> УЧЕНИКИ <span id="playersCount" style="font-size: 1rem; margin-left: 10px;"></span></h2>
+                    <div class="players-container" id="playersContainer">
+                        <div id="playersList" class="players-list">
+                            <div class="empty-state">
+                                <div class="empty-icon" style="font-size: 3rem; margin-bottom: 10px;">🧪</div>
+                                <p>Ожидание учеников...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка с вопросами -->
+            <div class="right-column">
+                <div class="glass-panel" style="height: 100%; display: flex; flex-direction: column;">
+                    <h2><i class="fas fa-list-ol"></i> ВОПРОСЫ (30)</h2>
+                    <div class="questions-container">
+                        <div id="questionsList" class="questions-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Режим презентации -->
+    <div id="presentationMode">
+        <div class="presentation-header">
+            <span>🧪 ВОПРОС <span id="presQNum">1</span>/30</span>
+            <span class="stats">Ответили: <span id="presAnswered">0</span> | ✅ <span id="presCorrect">0</span></span>
+        </div>
+        <div class="presentation-content">
+            <div class="presentation-question">
+                <h2 id="presQuestionText"></h2>
+                <div id="presAnswerBox" class="presentation-answer"></div>
+            </div>
+        </div>
+        <div class="presentation-controls">
+            <button class="glass-btn" onclick="showAnswerOnBoard()" id="presShowAnswerBtn">
+                <i class="fas fa-check-circle"></i> ПОКАЗАТЬ ОТВЕТ
+            </button>
+            <button class="glass-btn" onclick="closePresentation()">
+                <i class="fas fa-times"></i> ЗАКРЫТЬ
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════
+        // 30 ВОПРОСОВ О ЩЕЛОЧНЫХ МЕТАЛЛАХ (такие же как в student.html)
+        // ═══════════════════════════════════════════════════════════════════════
+        const QUESTIONS = [
+            { id: 1, text: "🧪 Сколько электронов на внешнем уровне у щелочных металлов?", options: ["1", "2", "3", "7"], correct: 0, points: 1 },
+            { id: 2, text: "🧪 Какой щелочной металл самый лёгкий?", options: ["Натрий", "Калий", "Литий", "Рубидий"], correct: 2, points: 1 },
+            { id: 3, text: "🧪 В какой группе таблицы Менделеева находятся щелочные металлы?", options: ["VII группа", "I группа", "II группа", "VIII группа"], correct: 1, points: 1 },
+            { id: 4, text: "🧪 Как щелочные металлы реагируют с водой?", options: ["Не реагируют", "С образованием кислоты", "Бурно с выделением водорода", "Медленно с выделением кислорода"], correct: 2, points: 1 },
+            { id: 5, text: "🧪 Какой цвет пламени характерен для натрия?", options: ["Малиновый", "Жёлтый", "Фиолетовый", "Зелёный"], correct: 1, points: 1 },
+            { id: 6, text: "🧪 Как хранят щелочные металлы?", options: ["В воде", "На воздухе", "Под слоем керосина", "В спирте"], correct: 2, points: 1 },
+            { id: 7, text: "🧪 Какой щелочной металл используется в атомных часах?", options: ["Литий", "Натрий", "Калий", "Цезий"], correct: 3, points: 1 },
+            { id: 8, text: "🧪 Какой щелочной металл самый мягкий?", options: ["Литий", "Натрий", "Калий", "Все твёрдые"], correct: 2, points: 1 },
+            { id: 9, text: "🧪 Щелочные металлы - это металлы ...", options: ["IA группы", "IIA группы", "VIIIA группы", "IB группы"], correct: 0, points: 1 },
+            { id: 10, text: "🧪 Какой щелочной металл имеет символ 'K'?", options: ["Калий", "Кальций", "Кремний", "Кадмий"], correct: 0, points: 1 },
+            { id: 11, text: "🧪 Что образуется при реакции калия с водой?", options: ["KOH + H₂", "K₂O + H₂", "KOH + O₂", "K₂O₂ + H₂"], correct: 0, points: 2 },
+            { id: 12, text: "🧪 Как изменяется радиус атома в группе сверху вниз?", options: ["Увеличивается", "Уменьшается", "Не изменяется", "Сначала увеличивается, потом уменьшается"], correct: 0, points: 2 },
+            { id: 13, text: "🧪 Какой цвет пламени у лития?", options: ["Жёлтый", "Малиновый", "Фиолетовый", "Синий"], correct: 1, points: 2 },
+            { id: 14, text: "🧪 Какой цвет пламени у калия?", options: ["Жёлтый", "Малиновый", "Фиолетовый", "Зелёный"], correct: 2, points: 2 },
+            { id: 15, text: "🧪 Почему щелочные металлы хранят под слоем керосина?", options: ["Для красоты", "Они реагируют с кислородом", "Они тонут в керосине", "Чтобы не испарялись"], correct: 1, points: 2 },
+            { id: 16, text: "🧪 Какова электронная конфигурация натрия?", options: ["1s² 2s¹", "1s² 2s² 2p⁶ 3s¹", "1s² 2s² 2p⁶ 3s²", "1s² 2s² 2p³"], correct: 1, points: 2 },
+            { id: 17, text: "🧪 Какой щелочной металл самый распространённый в земной коре?", options: ["Литий", "Натрий", "Калий", "Рубидий"], correct: 1, points: 2 },
+            { id: 18, text: "🧪 Какую степень окисления проявляют щелочные металлы в соединениях?", options: ["+1", "+2", "+3", "+4"], correct: 0, points: 2 },
+            { id: 19, text: "🧪 Как называется природный хлорид натрия?", options: ["Сильвин", "Галит", "Карналлит", "Глауберит"], correct: 1, points: 2 },
+            { id: 20, text: "🧪 Какой щелочной металл необходим для работы нервной системы?", options: ["Литий", "Натрий", "Калий", "Рубидий"], correct: 2, points: 2 },
+            { id: 21, text: "🧪 Какой щелочной металл самый активный?", options: ["Литий", "Натрий", "Калий", "Франций"], correct: 3, points: 3 },
+            { id: 22, text: "🧪 Почему литий менее активен, чем другие щелочные металлы?", options: ["Меньший радиус", "Большая масса", "Другое строение", "Он не щелочной"], correct: 0, points: 3 },
+            { id: 23, text: "🧪 Какой продукт получают электролизом расплава NaCl?", options: ["Хлор и натрий", "Хлор и NaOH", "NaOH и H₂", "Na и HCl"], correct: 0, points: 3 },
+            { id: 24, text: "🧪 Как называется природный хлорид калия?", options: ["Галит", "Сильвин", "Карналлит", "Сильвинит"], correct: 1, points: 3 },
+            { id: 25, text: "🧪 Какой щелочной металл используется в термоядерном синтезе?", options: ["Натрий", "Калий", "Литий", "Цезий"], correct: 2, points: 3 },
+            { id: 26, text: "🧪 Как изменяется температура плавления щелочных металлов сверху вниз?", options: ["Увеличивается", "Уменьшается", "Не изменяется", "Сначала растёт, потом падает"], correct: 1, points: 3 },
+            { id: 27, text: "🧪 Какой щелочной металл имеет самую низкую температуру плавления?", options: ["Литий", "Натрий", "Калий", "Цезий"], correct: 3, points: 3 },
+            { id: 28, text: "🧪 Какой щелочной металл открыли последним (в природе)?", options: ["Рубидий", "Цезий", "Франций", "Калий"], correct: 2, points: 3 },
+            { id: 29, text: "🧪 Какова общая формула оксидов щелочных металлов?", options: ["MeO", "Me₂O", "MeO₂", "Me₂O₃"], correct: 1, points: 3 },
+            { id: 30, text: "🧪 Почему щелочные металлы называют 'щелочными'?", options: ["Они сладкие", "Их оксиды дают щёлочи с водой", "Они мылкие на ощупь", "Из-за цвета"], correct: 1, points: 3 }
+        ];
+
+        let gameCode = null;
+        let currentQuestionIndex = 0;
+        let pollInterval = null;
+        let statsInterval = null;
+        let answerShown = false;
+
+        async function createGame() {
+            try {
+                const code = Math.floor(10000000 + Math.random() * 90000000).toString();
+                
+                const { error } = await SB
+                    .from('games')
+                    .insert({ 
+                        code: code, 
+                        quiz_id: QUIZ_ID,
+                        created_at: Date.now(), 
+                        status: 'waiting',
+                        current_question: 0
+                    });
+                
+                if (error) throw error;
+                
+                gameCode = code;
+                
+                document.getElementById('startSection').style.display = 'none';
+                document.getElementById('gameControls').classList.remove('hidden');
+                document.getElementById('gameCode').innerText = code;
+                document.getElementById('currentQ').innerText = '0/' + QUESTIONS.length;
+                
+                renderQuestions();
+                startPolling();
+                startStatsPolling();
+                
+            } catch (e) {
+                alert('Ошибка: ' + e.message);
+            }
+        }
+
+        function renderQuestions() {
+            const list = document.getElementById('questionsList');
+            list.innerHTML = QUESTIONS.map((q, i) => {
+                let pointsClass = q.points === 1 ? 'easy' : q.points === 2 ? 'medium' : 'hard';
+                let status = i === currentQuestionIndex ? '▶️' : i < currentQuestionIndex ? '✅' : '⏳';
+                
+                return `
+                    <div class="question-item ${i === currentQuestionIndex ? 'active' : ''}" 
+                         onclick="showQuestionOnBoard(${i})">
+                        <div class="question-number">${i+1}</div>
+                        <div class="question-points ${pointsClass}">${q.points} балла</div>
+                        <div class="question-status">${status}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function showQuestionOnBoard(index) {
+            currentQuestionIndex = index;
+            answerShown = false;
+            renderQuestions();
+            
+            const q = QUESTIONS[index];
+            
+            await SB
+                .from('games')
+                .update({ 
+                    status: 'active', 
+                    current_question: q.id 
+                })
+                .eq('code', gameCode)
+                .eq('quiz_id', QUIZ_ID);
+            
+            document.getElementById('presQNum').innerText = index + 1;
+            document.getElementById('presQuestionText').innerText = q.text;
+            document.getElementById('presAnswerBox').classList.remove('show');
+            document.getElementById('presAnswerBox').innerHTML = '';
+            document.getElementById('presentationMode').classList.add('active');
+            
+            document.getElementById('showAnswerBtn').disabled = false;
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('presShowAnswerBtn').disabled = false;
+            
+            await updateStats();
+        }
+
+        function showAnswerOnBoard() {
+            if (answerShown) return;
+            
+            const q = QUESTIONS[currentQuestionIndex];
+            const correctAnswer = q.options[q.correct];
+            
+            const answerBox = document.getElementById('presAnswerBox');
+            answerBox.innerHTML = `✅ ПРАВИЛЬНЫЙ ОТВЕТ:<br>${correctAnswer}`;
+            answerBox.classList.add('show');
+            
+            document.getElementById('showAnswerBtn').disabled = true;
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('presShowAnswerBtn').disabled = true;
+            
+            answerShown = true;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex + 1 < QUESTIONS.length) {
+                showQuestionOnBoard(currentQuestionIndex + 1);
+            } else {
+                alert('🎉 Все 30 вопросов пройдены!');
+                closePresentation();
+            }
+        }
+
+        async function finishGame() {
+            if (!gameCode) return;
+            
+            await SB
+                .from('games')
+                .update({ status: 'finished' })
+                .eq('code', gameCode)
+                .eq('quiz_id', QUIZ_ID);
+            
+            alert('✅ Игра завершена! Ученики увидят результаты.');
+            resetGame();
+        }
+
+        function closePresentation() {
+            document.getElementById('presentationMode').classList.remove('active');
+        }
+
+        async function updatePlayers() {
+            if (!gameCode) return;
+            
+            try {
+                const { data, error } = await SB
+                    .from('players')
+                    .select('*')
+                    .eq('game_code', gameCode)
+                    .eq('quiz_id', QUIZ_ID);
+                
+                if (error) throw error;
+                
+                document.getElementById('totalPlayers').innerText = data.length;
+                document.getElementById('playersCount').innerText = `(${data.length})`;
+                
+                const list = document.getElementById('playersList');
+                if (data.length === 0) {
+                    list.innerHTML = '<div class="empty-state">🧪 Ожидание учеников...</div>';
+                } else {
+                    list.innerHTML = data.map(p => `
+                        <div class="player-card ${p.answered ? 'answered' : ''}">
+                            <div class="player-avatar">${p.name[0]}</div>
+                            <div class="player-name">${p.name}</div>
+                            <div class="player-score">🧪 ${p.score || 0}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error('Ошибка обновления игроков:', e);
+            }
+        }
+
+        async function updateStats() {
+            if (!gameCode || currentQuestionIndex < 0) return;
+            
+            try {
+                const currentQuestionId = QUESTIONS[currentQuestionIndex].id;
+                
+                const { data: answers, error } = await SB
+                    .from('answers')
+                    .select('*')
+                    .eq('game_code', gameCode)
+                    .eq('quiz_id', QUIZ_ID)
+                    .eq('question_id', currentQuestionId);
+                
+                if (error) throw error;
+                
+                const answeredCount = answers?.length || 0;
+                const correctCount = answers?.filter(a => a.is_correct).length || 0;
+                const wrongCount = answeredCount - correctCount;
+                
+                document.getElementById('answeredCount').innerText = answeredCount;
+                document.getElementById('correctCount').innerText = correctCount;
+                document.getElementById('wrongCount').innerText = wrongCount;
+                
+                if (document.getElementById('presentationMode').classList.contains('active')) {
+                    document.getElementById('presAnswered').innerText = answeredCount;
+                    document.getElementById('presCorrect').innerText = correctCount;
+                }
+            } catch (e) {
+                console.error('Ошибка обновления статистики:', e);
+            }
+        }
+
+        function startPolling() {
+            updatePlayers();
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(updatePlayers, 2000);
+        }
+
+        function startStatsPolling() {
+            updateStats();
+            if (statsInterval) clearInterval(statsInterval);
+            statsInterval = setInterval(updateStats, 2000);
+        }
+
+        function resetGame() {
+            if (pollInterval) clearInterval(pollInterval);
+            if (statsInterval) clearInterval(statsInterval);
+            gameCode = null;
+            currentQuestionIndex = 0;
+            answerShown = false;
+            document.getElementById('startSection').style.display = 'block';
+            document.getElementById('gameControls').classList.add('hidden');
+            document.getElementById('gameCode').innerText = '--------';
+            document.getElementById('playersList').innerHTML = '<div class="empty-state">🧪 Ожидание учеников...</div>';
+            document.getElementById('answeredCount').innerText = '0';
+            document.getElementById('correctCount').innerText = '0';
+            document.getElementById('wrongCount').innerText = '0';
+            document.getElementById('totalPlayers').innerText = '0';
+            document.getElementById('playersCount').innerText = '';
+            renderQuestions();
+            closePresentation();
+        }
+    </script>
+</body>
+</html>
