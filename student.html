@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🧪 Ученик - Щелочные металлы</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config_alkali.js"></script>
+    
+    <style>
+        :root {
+            --metal-silver: #C0C0C0;
+            --flame-lithium: #FF69B4;
+            --flame-sodium: #FFD700;
+            --flame-potassium: #9370DB;
+            --metal-dark: #2F4F4F;
+            --text-light: #F0F0F0;
+            --text-dark: #1C1C1C;
+            
+            --bg-gradient-start: #2F4F4F;
+            --bg-gradient-end: #696969;
+            
+            --glass-bg: rgba(192, 192, 192, 0.15);
+            --glass-bg-dark: rgba(47, 79, 79, 0.3);
+            --glass-border: rgba(255, 215, 0, 0.5);
+            --glass-blur: 12px;
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            
+            background: linear-gradient(135deg, 
+                var(--bg-gradient-start), 
+                var(--bg-gradient-end));
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .glass-card {
+            padding: 30px;
+            
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 2px solid var(--flame-sodium);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            
+            animation: floatIn 0.5s ease-out;
+        }
+        
+        .screen { display: none; }
+        .screen.active { display: block; }
+        
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--flame-sodium);
+            font-size: 2rem;
+            text-shadow: 0 0 15px rgba(255,215,0,0.5);
+        }
+        
+        .logo {
+            font-size: 70px;
+            text-align: center;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px var(--flame-sodium));
+        }
+        
+        input {
+            width: 100%;
+            padding: 20px;
+            margin: 10px 0;
+            font-size: 1.2rem;
+            border-radius: 15px;
+            
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+            color: var(--text-light);
+            font-family: inherit;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--flame-lithium);
+            box-shadow: 0 0 30px var(--flame-lithium);
+        }
+        
+        input::placeholder {
+            color: var(--metal-silver);
+            opacity: 0.7;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 20px;
+            margin: 10px 0;
+            font-size: 1.3rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid var(--flame-sodium);
+            color: var(--text-light);
+            font-family: inherit;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 105, 180, 0.3);
+            border-color: var(--flame-lithium);
+            box-shadow: 0 0 30px var(--flame-lithium);
+        }
+        
+        .info-box {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 15px;
+            
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 2px solid var(--flame-sodium);
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-item strong {
+            color: var(--flame-sodium);
+            font-size: 1.3rem;
+        }
+        
+        .question-header {
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+            color: var(--flame-sodium);
+        }
+        
+        .question-text {
+            font-size: 1.5rem;
+            margin: 30px 0;
+            text-align: center;
+            color: var(--text-light);
+            font-weight: bold;
+            line-height: 1.4;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .option {
+            padding: 18px;
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: 0.3s;
+            font-size: 1.2rem;
+            
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+            color: var(--text-light);
+        }
+        
+        .option:hover {
+            transform: translateX(10px);
+            border-color: var(--flame-lithium);
+            box-shadow: 0 0 20px var(--flame-lithium);
+        }
+        
+        .option.selected {
+            background: rgba(255, 105, 180, 0.3);
+            border-color: var(--flame-lithium);
+        }
+        
+        .option-letter {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 215, 0, 0.3);
+            color: var(--flame-sodium);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.4rem;
+            border: 2px solid var(--flame-sodium);
+        }
+        
+        .status {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .status.correct { 
+            background: rgba(46, 139, 86, 0.3);
+            border: 2px solid #2E8B57;
+            color: #98FB98;
+        }
+        
+        .status.wrong { 
+            background: rgba(220, 20, 60, 0.3);
+            border: 2px solid #DC143C;
+            color: #FFB6C1;
+        }
+        
+        .status.waiting {
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+            color: var(--text-light);
+        }
+        
+        .error {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: bold;
+            
+            background: rgba(220, 20, 60, 0.3);
+            border: 2px solid #DC143C;
+            color: #FFB6C1;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            margin: 30px auto;
+            border: 5px solid var(--glass-border);
+            border-top: 5px solid var(--flame-lithium);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden { display: none; }
+        
+        @keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .leaderboard {
+            margin: 20px 0;
+        }
+        
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 15px;
+            margin: 30px 0;
+            padding: 20px 0;
+        }
+        
+        .podium-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+        }
+        
+        .podium-1 { order: 2; }
+        .podium-2 { order: 1; }
+        .podium-3 { order: 3; }
+        
+        .podium-place {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border: 2px solid var(--flame-sodium);
+        }
+        
+        .podium-1 .podium-place {
+            background: rgba(255, 215, 0, 0.3);
+            color: var(--flame-sodium);
+            box-shadow: 0 0 30px var(--flame-sodium);
+        }
+        
+        .podium-2 .podium-place {
+            background: rgba(192, 192, 192, 0.3);
+            color: var(--metal-silver);
+            box-shadow: 0 0 30px var(--metal-silver);
+        }
+        
+        .podium-3 .podium-place {
+            background: rgba(205, 127, 50, 0.3);
+            color: #CD7F32;
+            box-shadow: 0 0 30px #CD7F32;
+        }
+        
+        .podium-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 5px;
+            color: var(--text-light);
+        }
+        
+        .podium-score {
+            font-size: 1.4rem;
+            color: var(--flame-sodium);
+            font-weight: bold;
+        }
+        
+        .players-table {
+            margin-top: 30px;
+        }
+        
+        .player-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--flame-sodium);
+            font-size: 1.2rem;
+            color: var(--text-light);
+            background: var(--glass-bg-dark);
+            border-radius: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .player-rank {
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: var(--flame-sodium);
+        }
+        
+        .player-name {
+            font-size: 1.2rem;
+            flex: 1;
+            margin-left: 15px;
+        }
+        
+        .player-score {
+            font-size: 1.4rem;
+            color: var(--flame-sodium);
+            font-weight: bold;
+        }
+        
+        .top-3-divider {
+            margin: 25px 0;
+            text-align: center;
+            font-size: 2rem;
+            color: var(--flame-sodium);
+        }
+        
+        .celebration {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 4rem;
+            filter: drop-shadow(0 0 20px var(--flame-sodium));
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ЭКРАН ВХОДА -->
+        <div id="joinScreen" class="screen active">
+            <div class="glass-card">
+                <div class="logo">🧪</div>
+                <h1>ЩЕЛОЧНЫЕ<br>МЕТАЛЛЫ</h1>
+                <div id="errorContainer"></div>
+                <input type="text" id="playerName" placeholder="🧪 Твоё имя">
+                <input type="text" id="gameCode" placeholder="🧪 Код игры">
+                <button id="joinButton" class="btn">🧪 ПОДКЛЮЧИТЬСЯ</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН ОЖИДАНИЯ -->
+        <div id="waitingScreen" class="screen">
+            <div class="glass-card">
+                <div class="logo">⏳</div>
+                <h2>ОЖИДАНИЕ...</h2>
+                <div class="loader"></div>
+                <div class="info-box">
+                    <div class="info-item">
+                        <span>🧪 Участник:</span>
+                        <strong id="displayName">-</strong>
+                    </div>
+                    <div class="info-item">
+                        <span>🧪 Код:</span>
+                        <strong id="displayCode">-</strong>
+                    </div>
+                    <div class="info-item">
+                        <span>🧪 Очки:</span>
+                        <strong id="displayScore">0</strong>
+                    </div>
+                </div>
+                <button onclick="leaveGame()" class="btn">🚪 ВЫЙТИ</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН ВОПРОСА -->
+        <div id="questionScreen" class="screen">
+            <div class="glass-card">
+                <div class="question-header">
+                    <span>🧪 ВОПРОС</span>
+                    <span id="questionCounter">1/10</span>
+                </div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="status waiting" id="answerStatus">⏳ Выбери ответ</div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН ЛИДЕРБОРДА -->
+        <div id="leaderboardScreen" class="screen">
+            <div class="glass-card">
+                <div class="celebration">🏆</div>
+                <h2>🧪 РЕЗУЛЬТАТЫ</h2>
+                <div class="leaderboard" id="leaderboard"></div>
+                <button onclick="playAgain()" class="btn">🔄 ИГРАТЬ СНОВА</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════
+        // 10 ВОПРОСОВ О ЩЕЛОЧНЫХ МЕТАЛЛАХ (9 класс)
+        // ═══════════════════════════════════════════════════════════════════════
+        const QUESTIONS = [
+            { 
+                id: 1, 
+                text: "🧪 Сколько электронов на внешнем уровне у щелочных металлов?", 
+                options: ["1", "2", "3", "7"], 
+                correct: 0, 
+                points: 1 
+            },
+            { 
+                id: 2, 
+                text: "🧪 Какой щелочной металл самый лёгкий?", 
+                options: ["Натрий", "Калий", "Литий", "Рубидий"], 
+                correct: 2, 
+                points: 1 
+            },
+            { 
+                id: 3, 
+                text: "🧪 В какой группе таблицы Менделеева находятся щелочные металлы?", 
+                options: ["VII группа", "I группа", "II группа", "VIII группа"], 
+                correct: 1, 
+                points: 1 
+            },
+            { 
+                id: 4, 
+                text: "🧪 Как щелочные металлы реагируют с водой?", 
+                options: [
+                    "Не реагируют", 
+                    "С образованием кислоты", 
+                    "Бурно с выделением водорода", 
+                    "Медленно с выделением кислорода"
+                ], 
+                correct: 2, 
+                points: 1 
+            },
+            { 
+                id: 5, 
+                text: "🧪 Какой цвет пламени характерен для натрия?", 
+                options: ["Малиновый", "Жёлтый", "Фиолетовый", "Зелёный"], 
+                correct: 1, 
+                points: 2 
+            },
+            { 
+                id: 6, 
+                text: "🧪 Как хранят щелочные металлы?", 
+                options: [
+                    "В воде", 
+                    "На воздухе", 
+                    "Под слоем керосина", 
+                    "В спирте"
+                ], 
+                correct: 2, 
+                points: 2 
+            },
+            { 
+                id: 7, 
+                text: "🧪 Какой щелочной металл используется в атомных часах?", 
+                options: ["Литий", "Натрий", "Калий", "Цезий"], 
+                correct: 3, 
+                points: 2 
+            },
+            { 
+                id: 8, 
+                text: "🧪 Что образуется при реакции калия с водой?", 
+                options: [
+                    "KOH + H₂", 
+                    "K₂O + H₂", 
+                    "KOH + O₂", 
+                    "K₂O₂ + H₂"
+                ], 
+                correct: 0, 
+                points: 3 
+            },
+            { 
+                id: 9, 
+                text: "🧪 Какой щелочной металл самый активный?", 
+                options: ["Литий", "Натрий", "Калий", "Франций"], 
+                correct: 3, 
+                points: 3 
+            },
+            { 
+                id: 10, 
+                text: "🧪 Как изменяется радиус атома в группе сверху вниз?", 
+                options: [
+                    "Увеличивается", 
+                    "Уменьшается", 
+                    "Не изменяется", 
+                    "Сначала увеличивается, потом уменьшается"
+                ], 
+                correct: 0, 
+                points: 3 
+            }
+        ];
+
+        let gameCode = null;
+        let playerName = null;
+        let currentQuestion = null;
+        let hasAnswered = false;
+        let pollInterval = null;
+        let playerScore = 0;
+        let currentQuestionId = null;
+        let isQuestionScreenActive = false;
+        let gameCompleted = false;
+
+        const joinButton = document.getElementById('joinButton');
+        const errorContainer = document.getElementById('errorContainer');
+        const playerNameInput = document.getElementById('playerName');
+        const gameCodeInput = document.getElementById('gameCode');
+
+        function showError(msg) {
+            errorContainer.innerHTML = `<div class="error">${msg}</div>`;
+            setTimeout(() => errorContainer.innerHTML = '', 3000);
+        }
+
+        function switchScreen(screen) {
+            ['join', 'waiting', 'question', 'leaderboard'].forEach(s => {
+                document.getElementById(s + 'Screen').classList.remove('active');
+            });
+            document.getElementById(screen + 'Screen').classList.add('active');
+            
+            if (screen === 'question') {
+                isQuestionScreenActive = true;
+            } else {
+                isQuestionScreenActive = false;
+            }
+            
+            if (screen === 'leaderboard') {
+                loadLeaderboard();
+            }
+        }
+
+        async function loadLeaderboard() {
+            if (!gameCode) return;
+            
+            try {
+                const { data: players, error } = await SB
+                    .from('players')
+                    .select('name, score')
+                    .eq('game_code', gameCode)
+                    .order('score', { ascending: false });
+                
+                if (error) throw error;
+                
+                const leaderboardDiv = document.getElementById('leaderboard');
+                
+                if (!players || players.length === 0) {
+                    leaderboardDiv.innerHTML = '<p style="text-align: center; font-size: 1.3rem; color: var(--text-light);">🧪 Нет участников</p>';
+                    return;
+                }
+                
+                const top3 = players.slice(0, 3);
+                const others = players.slice(3);
+                
+                let html = '';
+                
+                if (top3.length > 0) {
+                    html += '<div class="podium">';
+                    const podiumOrder = [1, 0, 2];
+                    
+                    podiumOrder.forEach((idx, position) => {
+                        if (idx < top3.length) {
+                            const player = top3[idx];
+                            const place = idx + 1;
+                            const placeClass = place === 1 ? 'podium-1' : place === 2 ? 'podium-2' : 'podium-3';
+                            
+                            html += `
+                                <div class="podium-item ${placeClass}">
+                                    <div class="podium-place">${place}</div>
+                                    <div class="podium-name">${player.name}</div>
+                                    <div class="podium-score">${player.score}</div>
+                                </div>
+                            `;
+                        }
+                    });
+                    html += '</div>';
+                }
+                
+                if (others.length > 0) {
+                    html += '<div class="top-3-divider">🧪 🧪 🧪</div>';
+                    
+                    others.forEach((player, index) => {
+                        const rank = index + 4;
+                        html += `
+                            <div class="player-row">
+                                <span class="player-rank">#${rank}</span>
+                                <span class="player-name">${player.name}</span>
+                                <span class="player-score">${player.score}</span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                leaderboardDiv.innerHTML = html;
+                
+            } catch (e) {
+                console.error('Ошибка загрузки лидерборда:', e);
+            }
+        }
+
+        joinButton.addEventListener('click', async () => {
+            const name = playerNameInput.value.trim();
+            const code = gameCodeInput.value.trim();
+            
+            if (!name || !code) {
+                showError("Введите имя и код");
+                return;
+            }
+            
+            try {
+                const { error } = await SB
+                    .from('players')
+                    .insert({
+                        game_code: code,
+                        name: name,
+                        score: 0,
+                        answered: false,
+                        joined_at: Date.now()
+                    });
+                
+                if (error) throw error;
+                
+                gameCode = code;
+                playerName = name;
+                
+                document.getElementById('displayName').innerText = name;
+                document.getElementById('displayCode').innerText = code;
+                switchScreen('waiting');
+                
+                if (pollInterval) clearInterval(pollInterval);
+                pollInterval = setInterval(checkGameStatus, 2000);
+                
+            } catch (e) {
+                showError(e.message);
+            }
+        });
+
+        async function checkGameStatus() {
+            if (!gameCode) return;
+            
+            try {
+                const { data, error } = await SB
+                    .from('games')
+                    .select('status, current_question')
+                    .eq('code', gameCode)
+                    .single();
+                
+                if (error) {
+                    console.log('Игра не найдена:', error.message);
+                    return;
+                }
+                
+                if (data) {
+                    if (data.status === 'finished' && !gameCompleted) {
+                        gameCompleted = true;
+                        clearInterval(pollInterval);
+                        switchScreen('leaderboard');
+                    }
+                    else if (data.status === 'active' && data.current_question) {
+                        if (data.current_question !== currentQuestionId) {
+                            currentQuestionId = data.current_question;
+                            hasAnswered = false;
+                            loadQuestion(data.current_question);
+                            switchScreen('question');
+                        }
+                    } 
+                    else if (data.status !== 'active' && isQuestionScreenActive && !gameCompleted) {
+                        gameCompleted = true;
+                        clearInterval(pollInterval);
+                        switchScreen('leaderboard');
+                    }
+                }
+            } catch (e) {
+                console.error('Ошибка при проверке игры:', e);
+            }
+        }
+
+        function loadQuestion(questionId) {
+            const question = QUESTIONS.find(q => q.id === questionId);
+            if (!question) return;
+            
+            currentQuestion = question;
+            
+            document.getElementById('questionText').innerText = question.text;
+            document.getElementById('questionCounter').innerText = `${questionId}/${QUESTIONS.length}`;
+            
+            const optionsHtml = question.options.map((opt, i) => `
+                <div class="option" onclick="selectAnswer(${i})">
+                    <div class="option-letter">${String.fromCharCode(65 + i)}</div>
+                    <div>${opt}</div>
+                </div>
+            `).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+            document.getElementById('answerStatus').innerHTML = '⏳ Выбери ответ';
+            document.getElementById('answerStatus').className = 'status waiting';
+        }
+
+        window.selectAnswer = async (index) => {
+            if (hasAnswered || !currentQuestion || !gameCode || !playerName) return;
+            
+            hasAnswered = true;
+            
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                if (i === index) opt.classList.add('selected');
+            });
+            
+            const isCorrect = (index === currentQuestion.correct);
+            
+            const statusDiv = document.getElementById('answerStatus');
+            statusDiv.textContent = isCorrect ? "✅ ПРАВИЛЬНО!" : "❌ НЕПРАВИЛЬНО";
+            statusDiv.className = isCorrect ? "status correct" : "status wrong";
+            
+            try {
+                const { error: answerError } = await SB
+                    .from('answers')
+                    .insert({
+                        game_code: gameCode,
+                        question_id: currentQuestion.id,
+                        player_name: playerName,
+                        answer_index: index,
+                        is_correct: isCorrect,
+                        answered_at: Date.now()
+                    });
+                
+                if (answerError) throw answerError;
+                
+                if (isCorrect) {
+                    playerScore += currentQuestion.points;
+                    document.getElementById('displayScore').innerText = playerScore;
+                    
+                    await SB
+                        .from('players')
+                        .update({ 
+                            score: playerScore, 
+                            answered: true 
+                        })
+                        .eq('game_code', gameCode)
+                        .eq('name', playerName);
+                } else {
+                    await SB
+                        .from('players')
+                        .update({ answered: true })
+                        .eq('game_code', gameCode)
+                        .eq('name', playerName);
+                }
+                
+            } catch (e) {
+                console.error('Ошибка сохранения ответа:', e);
+                hasAnswered = false;
+            }
+        };
+
+        window.leaveGame = () => {
+            if (pollInterval) clearInterval(pollInterval);
+            resetGameState();
+            switchScreen('join');
+        };
+
+        window.playAgain = () => {
+            resetGameState();
+            switchScreen('join');
+        };
+
+        function resetGameState() {
+            gameCode = null;
+            playerName = null;
+            currentQuestion = null;
+            hasAnswered = false;
+            currentQuestionId = null;
+            playerScore = 0;
+            isQuestionScreenActive = false;
+            gameCompleted = false;
+            playerNameInput.value = '';
+            gameCodeInput.value = '';
+            document.getElementById('displayScore').innerText = '0';
+        }
+    </script>
+</body>
+</html>
