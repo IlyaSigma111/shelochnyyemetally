@@ -127,7 +127,7 @@
             min-height: 0;
         }
         
-        /* Левая колонка - управление + шпаргалка */
+        /* Левая колонка - управление на всю высоту */
         .left-column {
             width: 35%;
             display: flex;
@@ -137,7 +137,7 @@
             min-height: 0;
         }
         
-        /* Правая колонка - ученики и вопросы (поровну) */
+        /* Правая колонка - ученики и вопросы поровну */
         .right-column {
             width: 65%;
             display: flex;
@@ -175,16 +175,25 @@
             font-size: 1rem;
         }
         
-        /* Панель управления */
+        /* Панель управления - растянута на всю высоту */
         .control-panel {
-            flex-shrink: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        
+        .control-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
         }
         
         .control-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
         .full-width {
@@ -195,7 +204,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin: 10px 0;
+            margin: 15px 0;
         }
         
         .stat-card {
@@ -222,6 +231,7 @@
             border-radius: 10px;
             background: var(--glass-bg-dark);
             border: 2px solid var(--flame-sodium);
+            margin-bottom: 15px;
         }
         
         .info-row {
@@ -236,43 +246,31 @@
             font-weight: 700;
         }
         
-        /* ============== ШПАРГАЛКА (новая) ============== */
-        .cheat-sheet {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
-        }
-        
-        .cheat-content {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .cheat-item {
-            padding: 8px 10px;
+        /* Подсказка по цветам пламени */
+        .flame-hint {
+            padding: 10px;
+            border-radius: 10px;
             background: var(--glass-bg-dark);
             border: 2px solid var(--flame-sodium);
-            border-radius: 10px;
-            color: var(--text-light);
         }
         
-        .cheat-title {
+        .flame-title {
             color: var(--flame-sodium);
             font-weight: bold;
             font-size: 0.9rem;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 5px;
         }
         
-        .cheat-row {
+        .flame-row {
             display: flex;
             align-items: center;
             gap: 8px;
             padding: 3px 0;
             font-size: 0.85rem;
+            color: var(--text-light);
         }
         
         .color-dot {
@@ -512,7 +510,7 @@
     <div id="mainInterface">
         <header class="teacher-header">
             <div class="header-left">
-                <h1>🧪 ЩЕЛОЧНЫЕ МЕТАЛЛЫ • 9 класс</h1>
+                <h1>🧪 ЩЕЛОЧНЫЕ МЕТАЛЛЫ • 30 вопросов</h1>
             </div>
             <div class="game-code-box">
                 <span>🧪 КОД:</span>
@@ -524,110 +522,80 @@
         </header>
 
         <div class="main-content">
-            <!-- Левая колонка - управление + шпаргалка -->
+            <!-- Левая колонка - управление на всю высоту -->
             <div class="left-column">
-                <!-- Управление -->
                 <div class="glass-panel control-panel">
                     <h2><i class="fas fa-flask"></i> УПРАВЛЕНИЕ</h2>
                     
-                    <div id="startSection">
-                        <button onclick="createGame()" class="glass-btn full-width">
-                            <i class="fas fa-plus-circle"></i> СОЗДАТЬ ИГРУ
-                        </button>
-                    </div>
+                    <div class="control-content">
+                        <div id="startSection">
+                            <button onclick="createGame()" class="glass-btn full-width">
+                                <i class="fas fa-plus-circle"></i> СОЗДАТЬ ИГРУ
+                            </button>
+                        </div>
 
-                    <div id="gameControls" class="hidden">
-                        <div id="controlPanel">
-                            <div class="control-buttons">
-                                <button onclick="showQuestionOnBoard(currentQuestionIndex)" id="showCurrentBtn" class="glass-btn full-width">
-                                    <i class="fas fa-play"></i> ПОКАЗАТЬ
-                                </button>
-                                <button onclick="showAnswerOnBoard()" id="showAnswerBtn" class="glass-btn" disabled>
-                                    <i class="fas fa-check-circle"></i> ОТВЕТ
-                                </button>
-                                <button onclick="nextQuestion()" id="nextBtn" class="glass-btn" disabled>
-                                    <i class="fas fa-forward"></i> ДАЛЕЕ
-                                </button>
-                                <button onclick="finishGame()" class="glass-btn full-width">
-                                    <i class="fas fa-flag-checkered"></i> ЗАВЕРШИТЬ
-                                </button>
-                                <button onclick="resetGame()" class="glass-btn full-width">
-                                    <i class="fas fa-redo"></i> СБРОС
-                                </button>
+                        <div id="gameControls" class="hidden">
+                            <div id="controlPanel">
+                                <div class="control-buttons">
+                                    <button onclick="showQuestionOnBoard(currentQuestionIndex)" id="showCurrentBtn" class="glass-btn full-width">
+                                        <i class="fas fa-play"></i> ПОКАЗАТЬ ВОПРОС
+                                    </button>
+                                    <button onclick="showAnswerOnBoard()" id="showAnswerBtn" class="glass-btn" disabled>
+                                        <i class="fas fa-check-circle"></i> ОТВЕТ
+                                    </button>
+                                    <button onclick="nextQuestion()" id="nextBtn" class="glass-btn" disabled>
+                                        <i class="fas fa-forward"></i> ДАЛЕЕ
+                                    </button>
+                                    <button onclick="finishGame()" class="glass-btn full-width">
+                                        <i class="fas fa-flag-checkered"></i> ЗАВЕРШИТЬ
+                                    </button>
+                                    <button onclick="resetGame()" class="glass-btn full-width">
+                                        <i class="fas fa-redo"></i> СБРОС
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- Статистика -->
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-value" id="totalPlayers">0</div>
-                                <div>Учеников</div>
+                            
+                            <!-- Статистика -->
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="totalPlayers">0</div>
+                                    <div>Учеников</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="answeredCount">0</div>
+                                    <div>Ответили</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="correctCount">0</div>
+                                    <div>Верно</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="wrongCount">0</div>
+                                    <div>Неверно</div>
+                                </div>
                             </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="answeredCount">0</div>
-                                <div>Ответили</div>
+                            
+                            <!-- Текущий вопрос -->
+                            <div class="info-block">
+                                <div class="info-row">
+                                    <span>🧪 Текущий вопрос:</span>
+                                    <span class="info-value" id="currentQ">0/30</span>
+                                </div>
                             </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="correctCount">0</div>
-                                <div>Верно</div>
+                            
+                            <!-- Маленькая подсказка по цветам пламени -->
+                            <div class="flame-hint">
+                                <div class="flame-title"><i class="fas fa-fire"></i> Цвета пламени:</div>
+                                <div class="flame-row"><span class="color-dot dot-li"></span> <span class="flame-li">Литий — малиновый</span></div>
+                                <div class="flame-row"><span class="color-dot dot-na"></span> <span class="flame-na">Натрий — жёлтый</span></div>
+                                <div class="flame-row"><span class="color-dot dot-k"></span> <span class="flame-k">Калий — фиолетовый</span></div>
                             </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="wrongCount">0</div>
-                                <div>Неверно</div>
-                            </div>
-                        </div>
-                        
-                        <!-- Текущий вопрос -->
-                        <div class="info-block">
-                            <div class="info-row">
-                                <span>🧪 Текущий вопрос:</span>
-                                <span class="info-value" id="currentQ">0/10</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- ШПАРГАЛКА по щелочным металлам -->
-                <div class="glass-panel cheat-sheet">
-                    <h2><i class="fas fa-book"></i> ШПАРГАЛКА</h2>
-                    <div class="cheat-content">
-                        <div class="cheat-item">
-                            <div class="cheat-title"><i class="fas fa-atom"></i> Общая характеристика</div>
-                            <div class="cheat-row">• 1 электрон на внешнем уровне</div>
-                            <div class="cheat-row">• Степень окисления: +1</div>
-                            <div class="cheat-row">• Хранят под слоем керосина</div>
-                            <div class="cheat-row">• С водой → щёлочь + H₂</div>
-                        </div>
-                        
-                        <div class="cheat-item">
-                            <div class="cheat-title"><i class="fas fa-fire"></i> Цвета пламени</div>
-                            <div class="cheat-row"><span class="color-dot dot-li"></span> <span class="flame-li">Литий (Li) — малиновый</span></div>
-                            <div class="cheat-row"><span class="color-dot dot-na"></span> <span class="flame-na">Натрий (Na) — жёлтый</span></div>
-                            <div class="cheat-row"><span class="color-dot dot-k"></span> <span class="flame-k">Калий (K) — фиолетовый</span></div>
-                        </div>
-                        
-                        <div class="cheat-item">
-                            <div class="cheat-title"><i class="fas fa-chart-line"></i> Свойства в группе</div>
-                            <div class="cheat-row">• Радиус атома ↑ сверху вниз</div>
-                            <div class="cheat-row">• Металлические свойства ↑</div>
-                            <div class="cheat-row">• Температура плавления ↓</div>
-                            <div class="cheat-row">• Активность ↑ (к Li ↓)</div>
-                        </div>
-                        
-                        <div class="cheat-item">
-                            <div class="cheat-title"><i class="fas fa-flask"></i> Важные факты</div>
-                            <div class="cheat-row">• Самый лёгкий: Li</div>
-                            <div class="cheat-row">• Самый активный: Fr</div>
-                            <div class="cheat-row">• В атомных часах: Cs</div>
-                            <div class="cheat-row">• В термоядерном синтезе: Li</div>
-                            <div class="cheat-row">• NaCl - галит (каменная соль)</div>
-                            <div class="cheat-row">• KCl - сильвин</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Правая колонка - ученики + вопросы (поровну) -->
+            <!-- Правая колонка - ученики + вопросы поровну -->
             <div class="right-column">
                 <!-- Ученики (половина) -->
                 <div class="glass-panel" style="flex: 1; min-height: 0;">
@@ -644,7 +612,7 @@
                 
                 <!-- Вопросы (половина) -->
                 <div class="glass-panel" style="flex: 1; min-height: 0;">
-                    <h2><i class="fas fa-list-ol"></i> ВОПРОСЫ</h2>
+                    <h2><i class="fas fa-list-ol"></i> ВОПРОСЫ (30)</h2>
                     <div class="questions-container">
                         <div id="questionsList" class="questions-list"></div>
                     </div>
@@ -656,7 +624,7 @@
     <!-- Режим презентации -->
     <div id="presentationMode">
         <div class="presentation-header">
-            <span>🧪 ВОПРОС <span id="presQNum">1</span>/10</span>
+            <span>🧪 ВОПРОС <span id="presQNum">1</span>/30</span>
             <span class="stats">Ответили: <span id="presAnswered">0</span> | ✅ <span id="presCorrect">0</span></span>
         </div>
         <div class="presentation-content">
@@ -676,18 +644,43 @@
     </div>
 
     <script>
-        // 10 вопросов о щелочных металлах
+        // 30 вопросов о щелочных металлах
         const QUESTIONS = [
+            // Лёгкие (1 балл)
             { id: 1, text: "🧪 Сколько электронов на внешнем уровне у щелочных металлов?", options: ["1", "2", "3", "7"], correct: 0, points: 1 },
             { id: 2, text: "🧪 Какой щелочной металл самый лёгкий?", options: ["Натрий", "Калий", "Литий", "Рубидий"], correct: 2, points: 1 },
             { id: 3, text: "🧪 В какой группе таблицы Менделеева находятся щелочные металлы?", options: ["VII группа", "I группа", "II группа", "VIII группа"], correct: 1, points: 1 },
             { id: 4, text: "🧪 Как щелочные металлы реагируют с водой?", options: ["Не реагируют", "С образованием кислоты", "Бурно с выделением водорода", "Медленно с выделением кислорода"], correct: 2, points: 1 },
-            { id: 5, text: "🧪 Какой цвет пламени характерен для натрия?", options: ["Малиновый", "Жёлтый", "Фиолетовый", "Зелёный"], correct: 1, points: 2 },
-            { id: 6, text: "🧪 Как хранят щелочные металлы?", options: ["В воде", "На воздухе", "Под слоем керосина", "В спирте"], correct: 2, points: 2 },
-            { id: 7, text: "🧪 Какой щелочной металл используется в атомных часах?", options: ["Литий", "Натрий", "Калий", "Цезий"], correct: 3, points: 2 },
-            { id: 8, text: "🧪 Что образуется при реакции калия с водой?", options: ["KOH + H₂", "K₂O + H₂", "KOH + O₂", "K₂O₂ + H₂"], correct: 0, points: 3 },
-            { id: 9, text: "🧪 Какой щелочной металл самый активный?", options: ["Литий", "Натрий", "Калий", "Франций"], correct: 3, points: 3 },
-            { id: 10, text: "🧪 Почему щелочные металлы называют 'щелочными'?", options: ["Они сладкие", "Их оксиды дают щёлочи с водой", "Они мылкие на ощупь", "Из-за цвета"], correct: 1, points: 3 }
+            { id: 5, text: "🧪 Как хранят щелочные металлы?", options: ["В воде", "На воздухе", "Под слоем керосина", "В спирте"], correct: 2, points: 1 },
+            { id: 6, text: "🧪 Какой щелочной металл имеет символ 'K'?", options: ["Калий", "Кальций", "Кремний", "Кадмий"], correct: 0, points: 1 },
+            { id: 7, text: "🧪 Щелочные металлы - это металлы ...", options: ["IA группы", "IIA группы", "VIIIA группы", "IB группы"], correct: 0, points: 1 },
+            { id: 8, text: "🧪 Какой щелочной металл самый мягкий?", options: ["Литий", "Натрий", "Калий", "Все твёрдые"], correct: 2, points: 1 },
+            { id: 9, text: "🧪 Какую степень окисления проявляют щелочные металлы?", options: ["+1", "+2", "+3", "+4"], correct: 0, points: 1 },
+            { id: 10, text: "🧪 Какой щелочной металл используется в атомных часах?", options: ["Литий", "Натрий", "Калий", "Цезий"], correct: 3, points: 1 },
+            
+            // Средние (2 балла)
+            { id: 11, text: "🧪 Какой цвет пламени характерен для натрия?", options: ["Малиновый", "Жёлтый", "Фиолетовый", "Зелёный"], correct: 1, points: 2 },
+            { id: 12, text: "🧪 Какой цвет пламени у лития?", options: ["Жёлтый", "Малиновый", "Фиолетовый", "Синий"], correct: 1, points: 2 },
+            { id: 13, text: "🧪 Какой цвет пламени у калия?", options: ["Жёлтый", "Малиновый", "Фиолетовый", "Зелёный"], correct: 2, points: 2 },
+            { id: 14, text: "🧪 Почему щелочные металлы хранят под слоем керосина?", options: ["Для красоты", "Реагируют с кислородом", "Тонут в керосине", "Чтобы не испарялись"], correct: 1, points: 2 },
+            { id: 15, text: "🧪 Какова электронная конфигурация натрия?", options: ["1s² 2s¹", "1s² 2s² 2p⁶ 3s¹", "1s² 2s² 2p⁶ 3s²", "1s² 2s² 2p³"], correct: 1, points: 2 },
+            { id: 16, text: "🧪 Как изменяется радиус атома в группе сверху вниз?", options: ["Увеличивается", "Уменьшается", "Не изменяется", "Сначала растёт, потом падает"], correct: 0, points: 2 },
+            { id: 17, text: "🧪 Какой щелочной металл самый распространённый в земной коре?", options: ["Литий", "Натрий", "Калий", "Рубидий"], correct: 1, points: 2 },
+            { id: 18, text: "🧪 Как называется природный хлорид натрия?", options: ["Сильвин", "Галит", "Карналлит", "Глауберит"], correct: 1, points: 2 },
+            { id: 19, text: "🧪 Как называется природный хлорид калия?", options: ["Галит", "Сильвин", "Карналлит", "Сильвинит"], correct: 1, points: 2 },
+            { id: 20, text: "🧪 Какой щелочной металл необходим для работы нервной системы?", options: ["Литий", "Натрий", "Калий", "Рубидий"], correct: 2, points: 2 },
+            
+            // Сложные (3 балла)
+            { id: 21, text: "🧪 Что образуется при реакции калия с водой?", options: ["KOH + H₂", "K₂O + H₂", "KOH + O₂", "K₂O₂ + H₂"], correct: 0, points: 3 },
+            { id: 22, text: "🧪 Какой щелочной металл самый активный?", options: ["Литий", "Натрий", "Калий", "Франций"], correct: 3, points: 3 },
+            { id: 23, text: "🧪 Почему литий менее активен, чем другие щелочные металлы?", options: ["Меньший радиус", "Большая масса", "Другое строение", "Он не щелочной"], correct: 0, points: 3 },
+            { id: 24, text: "🧪 Какой продукт получают электролизом расплава NaCl?", options: ["Хлор и натрий", "Хлор и NaOH", "NaOH и H₂", "Na и HCl"], correct: 0, points: 3 },
+            { id: 25, text: "🧪 Какой щелочной металл используется в термоядерном синтезе?", options: ["Натрий", "Калий", "Литий", "Цезий"], correct: 2, points: 3 },
+            { id: 26, text: "🧪 Как изменяется температура плавления щелочных металлов сверху вниз?", options: ["Увеличивается", "Уменьшается", "Не изменяется", "Сначала растёт, потом падает"], correct: 1, points: 3 },
+            { id: 27, text: "🧪 Какой щелочной металл имеет самую низкую температуру плавления?", options: ["Литий", "Натрий", "Калий", "Цезий"], correct: 3, points: 3 },
+            { id: 28, text: "🧪 Какой щелочной металл открыли последним (в природе)?", options: ["Рубидий", "Цезий", "Франций", "Калий"], correct: 2, points: 3 },
+            { id: 29, text: "🧪 Какова общая формула оксидов щелочных металлов?", options: ["MeO", "Me₂O", "MeO₂", "Me₂O₃"], correct: 1, points: 3 },
+            { id: 30, text: "🧪 Почему щелочные металлы называют 'щелочными'?", options: ["Они сладкие", "Их оксиды дают щёлочи", "Они мылкие", "Из-за цвета"], correct: 1, points: 3 }
         ];
 
         let gameCode = null;
@@ -795,7 +788,7 @@
             if (currentQuestionIndex + 1 < QUESTIONS.length) {
                 showQuestionOnBoard(currentQuestionIndex + 1);
             } else {
-                alert('🎉 Все вопросы пройдены!');
+                alert('🎉 Все 30 вопросов пройдены!');
                 closePresentation();
             }
         }
