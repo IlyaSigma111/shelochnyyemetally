@@ -127,7 +127,7 @@
             min-height: 0;
         }
         
-        /* Левая колонка - управление */
+        /* Левая колонка - управление + шпаргалка */
         .left-column {
             width: 35%;
             display: flex;
@@ -137,7 +137,7 @@
             min-height: 0;
         }
         
-        /* Правая колонка - ученики и вопросы */
+        /* Правая колонка - ученики и вопросы (поровну) */
         .right-column {
             width: 65%;
             display: flex;
@@ -236,7 +236,61 @@
             font-weight: 700;
         }
         
-        /* ============== СПИСОК УЧЕНИКОВ (квадратики) ============== */
+        /* ============== ШПАРГАЛКА (новая) ============== */
+        .cheat-sheet {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
+        .cheat-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .cheat-item {
+            padding: 8px 10px;
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--flame-sodium);
+            border-radius: 10px;
+            color: var(--text-light);
+        }
+        
+        .cheat-title {
+            color: var(--flame-sodium);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .cheat-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 0;
+            font-size: 0.85rem;
+        }
+        
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid var(--text-light);
+        }
+        
+        .dot-li { background: var(--flame-lithium); }
+        .dot-na { background: var(--flame-sodium); }
+        .dot-k { background: var(--flame-potassium); }
+        
+        .flame-li { color: var(--flame-lithium); font-weight: bold; }
+        .flame-na { color: var(--flame-sodium); font-weight: bold; }
+        .flame-k { color: var(--flame-potassium); font-weight: bold; }
+        
+        /* ============== УЧЕНИКИ ============== */
         .players-container {
             flex: 1;
             overflow-y: auto;
@@ -295,28 +349,24 @@
             color: var(--flame-sodium);
         }
         
-        /* ============== ВОПРОСЫ (маленькие квадратики внизу) ============== */
-        .questions-section {
-            flex-shrink: 0;
-            height: 120px;
-        }
-        
+        /* ============== ВОПРОСЫ ============== */
         .questions-container {
+            flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
+            min-height: 0;
             padding-right: 5px;
-            height: 100%;
         }
         
         .questions-list {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 6px;
-            padding-bottom: 5px;
+            padding-bottom: 10px;
         }
         
         .question-item {
-            padding: 6px 3px;
+            padding: 8px 3px;
             text-align: center;
             border-radius: 8px;
             cursor: pointer;
@@ -462,7 +512,7 @@
     <div id="mainInterface">
         <header class="teacher-header">
             <div class="header-left">
-                <h1>🧪 ЩЕЛОЧНЫЕ МЕТАЛЛЫ</h1>
+                <h1>🧪 ЩЕЛОЧНЫЕ МЕТАЛЛЫ • 9 класс</h1>
             </div>
             <div class="game-code-box">
                 <span>🧪 КОД:</span>
@@ -474,8 +524,9 @@
         </header>
 
         <div class="main-content">
-            <!-- Левая колонка - управление -->
+            <!-- Левая колонка - управление + шпаргалка -->
             <div class="left-column">
+                <!-- Управление -->
                 <div class="glass-panel control-panel">
                     <h2><i class="fas fa-flask"></i> УПРАВЛЕНИЕ</h2>
                     
@@ -506,6 +557,7 @@
                             </div>
                         </div>
                         
+                        <!-- Статистика -->
                         <div class="stats-grid">
                             <div class="stat-card">
                                 <div class="stat-value" id="totalPlayers">0</div>
@@ -525,6 +577,7 @@
                             </div>
                         </div>
                         
+                        <!-- Текущий вопрос -->
                         <div class="info-block">
                             <div class="info-row">
                                 <span>🧪 Текущий вопрос:</span>
@@ -533,11 +586,50 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- ШПАРГАЛКА по щелочным металлам -->
+                <div class="glass-panel cheat-sheet">
+                    <h2><i class="fas fa-book"></i> ШПАРГАЛКА</h2>
+                    <div class="cheat-content">
+                        <div class="cheat-item">
+                            <div class="cheat-title"><i class="fas fa-atom"></i> Общая характеристика</div>
+                            <div class="cheat-row">• 1 электрон на внешнем уровне</div>
+                            <div class="cheat-row">• Степень окисления: +1</div>
+                            <div class="cheat-row">• Хранят под слоем керосина</div>
+                            <div class="cheat-row">• С водой → щёлочь + H₂</div>
+                        </div>
+                        
+                        <div class="cheat-item">
+                            <div class="cheat-title"><i class="fas fa-fire"></i> Цвета пламени</div>
+                            <div class="cheat-row"><span class="color-dot dot-li"></span> <span class="flame-li">Литий (Li) — малиновый</span></div>
+                            <div class="cheat-row"><span class="color-dot dot-na"></span> <span class="flame-na">Натрий (Na) — жёлтый</span></div>
+                            <div class="cheat-row"><span class="color-dot dot-k"></span> <span class="flame-k">Калий (K) — фиолетовый</span></div>
+                        </div>
+                        
+                        <div class="cheat-item">
+                            <div class="cheat-title"><i class="fas fa-chart-line"></i> Свойства в группе</div>
+                            <div class="cheat-row">• Радиус атома ↑ сверху вниз</div>
+                            <div class="cheat-row">• Металлические свойства ↑</div>
+                            <div class="cheat-row">• Температура плавления ↓</div>
+                            <div class="cheat-row">• Активность ↑ (к Li ↓)</div>
+                        </div>
+                        
+                        <div class="cheat-item">
+                            <div class="cheat-title"><i class="fas fa-flask"></i> Важные факты</div>
+                            <div class="cheat-row">• Самый лёгкий: Li</div>
+                            <div class="cheat-row">• Самый активный: Fr</div>
+                            <div class="cheat-row">• В атомных часах: Cs</div>
+                            <div class="cheat-row">• В термоядерном синтезе: Li</div>
+                            <div class="cheat-row">• NaCl - галит (каменная соль)</div>
+                            <div class="cheat-row">• KCl - сильвин</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Правая колонка - ученики + вопросы -->
+            <!-- Правая колонка - ученики + вопросы (поровну) -->
             <div class="right-column">
-                <!-- Ученики (основное место) -->
+                <!-- Ученики (половина) -->
                 <div class="glass-panel" style="flex: 1; min-height: 0;">
                     <h2><i class="fas fa-users"></i> УЧЕНИКИ <span id="playersCount" style="font-size: 0.9rem; margin-left: 5px;"></span></h2>
                     <div class="players-container" id="playersContainer">
@@ -550,8 +642,8 @@
                     </div>
                 </div>
                 
-                <!-- Вопросы (маленькая панель снизу) -->
-                <div class="glass-panel questions-section">
+                <!-- Вопросы (половина) -->
+                <div class="glass-panel" style="flex: 1; min-height: 0;">
                     <h2><i class="fas fa-list-ol"></i> ВОПРОСЫ</h2>
                     <div class="questions-container">
                         <div id="questionsList" class="questions-list"></div>
